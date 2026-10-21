@@ -23,11 +23,6 @@ Vagrant.configure("2") do |config|
       run: "always",
       inline: <<-SHELL
 
-        # отключение фаервола
-        sudo systemctl stop firewalld
-        sudo systemctl disable firewalld
-        sudo systemctl mask firewalld
-
         # установка пакетов.
         sudo dnf install -y epel-release
         sudo dnf install -y tcpdump net-tools iperf3 openvpn
@@ -51,11 +46,6 @@ Vagrant.configure("2") do |config|
     client.vm.provision "shell",
       run: "always",
       inline: <<-SHELL
-
-        # отключение фаервола
-        sudo systemctl stop firewalld
-        sudo systemctl disable firewalld
-        sudo systemctl mask firewalld
 
         # установка пакетов.
         sudo dnf install -y epel-release
