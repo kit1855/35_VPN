@@ -30,7 +30,7 @@ Vagrant.configure("2") do |config|
 
         # установка пакетов.
         sudo dnf install -y epel-release
-        sudo dnf install -y tcpdump net-tools iperf3
+        sudo dnf install -y tcpdump net-tools iperf3 openvpn
 
     SHELL
   end
@@ -59,7 +59,7 @@ Vagrant.configure("2") do |config|
 
         # установка пакетов.
         sudo dnf install -y epel-release
-        sudo dnf install -y tcpdump net-tools iperf3
+        sudo dnf install -y tcpdump net-tools iperf3 openvpn
 
 SHELL
   end
