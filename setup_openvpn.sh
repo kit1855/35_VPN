@@ -3,35 +3,33 @@ set -e
 
 # ============================================================
 # Скрипт настройки OpenVPN RAS на AlmaLinux 9 (задача 2)
+# Вся работа ведется в /home/vagrant
 # Запускать от root (sudo) после поднятия ВМ
 # ============================================================
 
-echo ">>> [1/8] Установка пакетов..."
+echo ">>> [1/7] Установка пакетов..."
 # epel-release уже должен быть установлен из Vagrantfile
 dnf install -y openvpn easy-rsa iptables-legacy iptables-legacy-libs
 
-echo ">>> [2/8] Подготовка PKI (easy-rsa)..."
-# Используем директорию в /root, чтобы не зависеть от домашней папки
-CA_DIR="/root/openvpn-ca"
+echo ">>> [2/7] Подготовка PKI (easy-rsa) в /home/vagrant..."
+CA_DIR="/home/vagrant/openvpn-ca"
 mkdir -p "$CA_DIR"
 cp -r /usr/share/easy-rsa/3/* "$CA_DIR/"
 cd "$CA_DIR"
 ./easyrsa init-pki
 
-echo ">>> [3/8] Создание CA..."
+echo ">>> [3/7] Создание CA и серверных сертификатов..."
 ./easyrsa --batch build-ca nopass
-
-echo ">>> [4/8] Генерация серверных сертификатов и ключей..."
 ./easyrsa --batch gen-req server nopass
 ./easyrsa --batch sign-req server server
 ./easyrsa gen-dh
 openvpn --genkey --secret ta.key
 
-echo ">>> [5/8] Генерация клиентского сертификата (client1)..."
+echo ">>> [4/7] Генерация клиентского сертификата (client1)..."
 ./easyrsa --batch gen-req client1 nopass
 ./easyrsa --batch sign-req client client1
 
-echo ">>> [6/8] Копирование файлов и создание server.conf..."
+echo ">>> [5/7] Копирование файлов и создание server.conf..."
 mkdir -p /etc/openvpn/server
 cp pki/ca.crt /etc/openvpn/server/
 cp pki/issued/server.crt /etc/openvpn/server/
@@ -62,7 +60,7 @@ status openvpn-status.log
 verb 3
 EOF
 
-echo ">>> [7/8] Настройка IP-форвардинга и NAT (iptables)..."
+echo ">>> [6/7] Настройка IP-форвардинга и NAT (iptables)..."
 # Включаем форвардинг
 echo 'net.ipv4.ip_forward = 1' > /etc/sysctl.d/99-openvpn.conf
 sysctl -p /etc/sysctl.d/99-openvpn.conf
@@ -83,12 +81,12 @@ iptables -A FORWARD -i "$OUT_IFACE" -o tun0 -m state --state RELATED,ESTABLISHED
 # Сохраняем правила
 iptables-save > /etc/sysconfig/iptables
 
-echo ">>> [8/8] Запуск OpenVPN и сборка client1.ovpn..."
+echo ">>> [7/7] Запуск OpenVPN и сборка client1.ovpn в /home/vagrant..."
 systemctl enable --now openvpn-server@server
 
 # Собираем unified .ovpn файл
 cd "$CA_DIR"
-OVPN_FILE="/vagrant/client1.ovpn"
+OVPN_FILE="/home/vagrant/client1.ovpn"
 
 cat > "$OVPN_FILE" << 'EOF'
 client
@@ -121,9 +119,12 @@ echo '<tls-auth>' >> "$OVPN_FILE"
 cat ta.key >> "$OVPN_FILE"
 echo '</tls-auth>' >> "$OVPN_FILE"
 
+# Меняем владельца файла на vagrant, чтобы было удобно читать без sudo
+chown vagrant:vagrant "$OVPN_FILE"
+
 echo "============================================================"
-echo "Готово! Файл client1.ovpn создан: $OVPN_FILE"
-echo "На хосте он появится в папке проекта (рядом с Vagrantfile)."
-echo "Не забудь проверить IP в строке 'remote' — он должен"
-echo "соответствовать текущему IP твоей ВМ."
+echo "Готово! Файл client1.ovpn создан по пути: $OVPN_FILE"
+echo "Чтобы забрать его, выполни команду (без sudo):"
+echo "cat /home/vagrant/client1.ovpn"
+echo "Затем скопируй вывод и вставь в файл client1.ovpn на хосте."
 echo "============================================================"
