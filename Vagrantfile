@@ -77,6 +77,12 @@ EOF
 
         sudo chmod 600 /etc/openvpn/static.key
         sudo chmod 644 /etc/openvpn/server-tun.conf /etc/openvpn/server-tap.conf
+
+        # Копируем скрипт из общей папки в домашнюю директорию
+        cp /vagrant/setup_openvpn.sh /home/vagrant/setup_openvpn.sh
+        chmod +x /home/vagrant/setup_openvpn.sh
+        chown vagrant:vagrant /home/vagrant/setup_openvpn.sh
+
     SHELL
   end
 
