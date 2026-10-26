@@ -1,0 +1,11 @@
+# Настроить VPN между двумя ВМ в tun/tap режимах, замерить скорость в туннелях, сделать вывод об отличающихся показателях
+
+# поднимаю на сервере виртуальный интерфейс tun0 и запускаю утилиту iperf3 для замера скорости передачи данных через туннель
+[vagrant@vpnserver ~]$ date; sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
+Mon Oct 26 11:02:57 AM UTC 2026
+[vagrant@vpnserver ~]$ date; sudo iperf3 -s -D
+Mon Oct 26 11:03:03 AM UTC 2026
+[vagrant@vpnserver ~]$ date; ss -tlnp | grep 5201
+Mon Oct 26 11:03:08 AM UTC 2026
+LISTEN 0      4096               *:5201            *:*
+[vagrant@vpnserver ~]$
