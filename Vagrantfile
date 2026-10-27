@@ -25,7 +25,7 @@ Vagrant.configure("2") do |config|
 
         # установка пакетов.
         sudo dnf install -y epel-release
-        sudo dnf install -y tcpdump net-tools iperf3 openvpn
+        sudo dnf install -y net-tools iperf3 openvpn
 
         # создание конфигов для tun и tap (сервер)
         sudo mkdir -p /etc/openvpn
@@ -105,7 +105,7 @@ EOF
 
         # установка пакетов.
         sudo dnf install -y epel-release
-        sudo dnf install -y tcpdump net-tools iperf3 openvpn
+        sudo dnf install -y net-tools iperf3 openvpn
 
         # создание конфигов для tun и tap (клиент)
         sudo mkdir -p /etc/openvpn
