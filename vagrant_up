@@ -1,12 +1,12 @@
 # vagrant up
 
-PS D:\linux\Professional\35 Мосты, туннели и VPN\dz4> vagrant up
+PS D:\linux\Professional\35 Мосты, туннели и VPN\dz5> vagrant up
 Bringing machine 'vpnserver' up with 'virtualbox' provider...
 Bringing machine 'vpnclient' up with 'virtualbox' provider...
 ==> vpnserver: Importing base box 'almalinux/9'...
 ==> vpnserver: Matching MAC address for NAT networking...
 ==> vpnserver: Checking if box 'almalinux/9' version '1.0.0' is up to date...
-==> vpnserver: Setting the name of the VM: dz4_vpnserver_1793004934868_65358
+==> vpnserver: Setting the name of the VM: dz5_vpnserver_1793120276136_74680
 ==> vpnserver: Clearing any previously set network interfaces...
 ==> vpnserver: Preparing network interfaces based on configuration...
     vpnserver: Adapter 1: nat
@@ -29,13 +29,13 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
 ==> vpnserver: Setting hostname...
 ==> vpnserver: Configuring and enabling network interfaces...
 ==> vpnserver: Mounting shared folders...
-    vpnserver: D:/linux/Professional/35 Мосты, туннели и VPN/dz4 => /vagrant
+    vpnserver: D:/linux/Professional/35 Мосты, туннели и VPN/dz5 => /vagrant
 ==> vpnserver: Running provisioner: shell...
     vpnserver: Running: inline script
-    vpnserver: AlmaLinux 9 - AppStream                         2.5 MB/s |  31 MB     00:12
-    vpnserver: AlmaLinux 9 - BaseOS                            3.1 MB/s |  49 MB     00:16
-    vpnserver: AlmaLinux 9 - Extras                             37 kB/s |  33 kB     00:00
-    vpnserver: Last metadata expiration check: 0:00:01 ago on Mon 26 Oct 2026 08:59:04 AM UTC.
+    vpnserver: AlmaLinux 9 - AppStream                         1.1 MB/s |  31 MB     00:27
+    vpnserver: AlmaLinux 9 - BaseOS                            1.1 MB/s |  52 MB     00:47
+    vpnserver: AlmaLinux 9 - Extras                            5.9 kB/s |  33 kB     00:05
+    vpnserver: Last metadata expiration check: 0:00:01 ago on Tue 27 Oct 2026 05:00:24 PM UTC.
     vpnserver: Dependencies resolved.
     vpnserver: ================================================================================
     vpnserver:  Package               Architecture    Version            Repository       Size
@@ -50,9 +50,9 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnserver: Total download size: 18 k
     vpnserver: Installed size: 26 k
     vpnserver: Downloading Packages:
-    vpnserver: epel-release-9-9.el9.noarch.rpm                 142 kB/s |  18 kB     00:00
+    vpnserver: epel-release-9-9.el9.noarch.rpm                 576 kB/s |  18 kB     00:00
     vpnserver: --------------------------------------------------------------------------------
-    vpnserver: Total                                            26 kB/s |  18 kB     00:00
+    vpnserver: Total                                            32 kB/s |  18 kB     00:00
     vpnserver: Running transaction check
     vpnserver: Transaction check succeeded.
     vpnserver: Running transaction test
@@ -70,10 +70,8 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnserver:   epel-release-9-9.el9.noarch
     vpnserver:
     vpnserver: Complete!
-    vpnserver: Extra Packages for Enterprise Linux 9 - x86_64  3.2 MB/s |  20 MB     00:06
+    vpnserver: Extra Packages for Enterprise Linux 9 - x86_64  1.1 MB/s |  20 MB     00:18
     vpnserver: Extra Packages for Enterprise Linux 9 openh264  2.2 kB/s | 2.5 kB     00:01
-    vpnserver: Last metadata expiration check: 0:00:01 ago on Mon 26 Oct 2026 08:59:26 AM UTC.
-    vpnserver: Package tcpdump-14:4.99.0-9.el9.x86_64 is already installed.
     vpnserver: Dependencies resolved.
     vpnserver: ================================================================================
     vpnserver:  Package           Arch       Version                       Repository     Size
@@ -93,13 +91,13 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnserver: Total download size: 1.2 M
     vpnserver: Installed size: 3.3 M
     vpnserver: Downloading Packages:
-    vpnserver: (1/5): iperf3-3.9-17.el9_8.1.x86_64.rpm         365 kB/s | 107 kB     00:00
-    vpnserver: (2/5): lksctp-tools-1.0.19-3.el9_4.x86_64.rpm   319 kB/s |  96 kB     00:00
-    vpnserver: (3/5): net-tools-2.0-0.64.20160912git.el9.x86_6 799 kB/s | 294 kB     00:00
-    vpnserver: (4/5): pkcs11-helper-1.27.0-6.el9.x86_64.rpm    255 kB/s |  62 kB     00:00
-    vpnserver: (5/5): openvpn-2.5.11-2.el9.x86_64.rpm          1.4 MB/s | 655 kB     00:00
+    vpnserver: (1/5): lksctp-tools-1.0.19-3.el9_4.x86_64.rpm   9.5 kB/s |  96 kB     00:10
+    vpnserver: (2/5): iperf3-3.9-17.el9_8.1.x86_64.rpm          11 kB/s | 107 kB     00:10
+    vpnserver: (3/5): net-tools-2.0-0.64.20160912git.el9.x86_6  29 kB/s | 294 kB     00:10
+    vpnserver: (4/5): openvpn-2.5.11-2.el9.x86_64.rpm          7.7 MB/s | 655 kB     00:00
+    vpnserver: (5/5): pkcs11-helper-1.27.0-6.el9.x86_64.rpm    679 kB/s |  62 kB     00:00
     vpnserver: --------------------------------------------------------------------------------
-    vpnserver: Total                                           368 kB/s | 1.2 MB     00:03
+    vpnserver: Total                                           105 kB/s | 1.2 MB     00:11
     vpnserver: Extra Packages for Enterprise Linux 9 - x86_64  1.6 MB/s | 1.6 kB     00:00
     vpnserver: Importing GPG key 0x3228467C:
     vpnserver:  Userid     : "Fedora (epel9) <epel@fedoraproject.org>"
@@ -135,7 +133,7 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
 ==> vpnclient: Importing base box 'almalinux/9'...
 ==> vpnclient: Matching MAC address for NAT networking...
 ==> vpnclient: Checking if box 'almalinux/9' version '1.0.0' is up to date...
-==> vpnclient: Setting the name of the VM: dz4_vpnclient_1793005181639_1289
+==> vpnclient: Setting the name of the VM: dz5_vpnclient_1793120480189_6558
 ==> vpnclient: Fixed port collision for 22 => 2222. Now on port 2200.
 ==> vpnclient: Clearing any previously set network interfaces...
 ==> vpnclient: Preparing network interfaces based on configuration...
@@ -159,12 +157,12 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
 ==> vpnclient: Setting hostname...
 ==> vpnclient: Configuring and enabling network interfaces...
 ==> vpnclient: Mounting shared folders...
-    vpnclient: D:/linux/Professional/35 Мосты, туннели и VPN/dz4 => /vagrant
+    vpnclient: D:/linux/Professional/35 Мосты, туннели и VPN/dz5 => /vagrant
 ==> vpnclient: Running provisioner: shell...
     vpnclient: Running: inline script
-    vpnclient: AlmaLinux 9 - AppStream                         1.7 MB/s |  31 MB     00:18
-    vpnclient: AlmaLinux 9 - BaseOS                            2.5 MB/s |  49 MB     00:19
-    vpnclient: AlmaLinux 9 - Extras                             42 kB/s |  33 kB     00:00
+    vpnclient: AlmaLinux 9 - AppStream                         1.1 MB/s |  31 MB     00:27
+    vpnclient: AlmaLinux 9 - BaseOS                            1.2 MB/s |  52 MB     00:43
+    vpnclient: AlmaLinux 9 - Extras                             39 kB/s |  33 kB     00:00
     vpnclient: Dependencies resolved.
     vpnclient: ================================================================================
     vpnclient:  Package               Architecture    Version            Repository       Size
@@ -179,9 +177,9 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnclient: Total download size: 18 k
     vpnclient: Installed size: 26 k
     vpnclient: Downloading Packages:
-    vpnclient: epel-release-9-9.el9.noarch.rpm                 163 kB/s |  18 kB     00:00
+    vpnclient: epel-release-9-9.el9.noarch.rpm                 868 kB/s |  18 kB     00:00
     vpnclient: --------------------------------------------------------------------------------
-    vpnclient: Total                                            29 kB/s |  18 kB     00:00
+    vpnclient: Total                                            33 kB/s |  18 kB     00:00
     vpnclient: Running transaction check
     vpnclient: Transaction check succeeded.
     vpnclient: Running transaction test
@@ -199,9 +197,9 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnclient:   epel-release-9-9.el9.noarch
     vpnclient:
     vpnclient: Complete!
-    vpnclient: Extra Packages for Enterprise Linux 9 - x86_64  2.8 MB/s |  20 MB     00:07
-    vpnclient: Extra Packages for Enterprise Linux 9 openh264  1.5 kB/s | 2.5 kB     00:01
-    vpnclient: Package tcpdump-14:4.99.0-9.el9.x86_64 is already installed.
+    vpnclient: Extra Packages for Enterprise Linux 9 - x86_64  1.1 MB/s |  20 MB     00:18
+    vpnclient: Extra Packages for Enterprise Linux 9 openh264  2.0 kB/s | 2.5 kB     00:01
+    vpnclient: Last metadata expiration check: 0:00:01 ago on Tue 27 Oct 2026 05:04:11 PM UTC.
     vpnclient: Dependencies resolved.
     vpnclient: ================================================================================
     vpnclient:  Package           Arch       Version                       Repository     Size
@@ -221,13 +219,13 @@ Bringing machine 'vpnclient' up with 'virtualbox' provider...
     vpnclient: Total download size: 1.2 M
     vpnclient: Installed size: 3.3 M
     vpnclient: Downloading Packages:
-    vpnclient: (1/5): lksctp-tools-1.0.19-3.el9_4.x86_64.rpm   379 kB/s |  96 kB     00:00
-    vpnclient: (2/5): iperf3-3.9-17.el9_8.1.x86_64.rpm         415 kB/s | 107 kB     00:00
-    vpnclient: (3/5): net-tools-2.0-0.64.20160912git.el9.x86_6 688 kB/s | 294 kB     00:00
-    vpnclient: (4/5): pkcs11-helper-1.27.0-6.el9.x86_64.rpm    335 kB/s |  62 kB     00:00
-    vpnclient: (5/5): openvpn-2.5.11-2.el9.x86_64.rpm          1.2 MB/s | 655 kB     00:00
+    vpnclient: (1/5): lksctp-tools-1.0.19-3.el9_4.x86_64.rpm   2.1 MB/s |  96 kB     00:00
+    vpnclient: (2/5): iperf3-3.9-17.el9_8.1.x86_64.rpm         2.0 MB/s | 107 kB     00:00
+    vpnclient: (3/5): net-tools-2.0-0.64.20160912git.el9.x86_6 4.1 MB/s | 294 kB     00:00
+    vpnclient: (4/5): pkcs11-helper-1.27.0-6.el9.x86_64.rpm    573 kB/s |  62 kB     00:00
+    vpnclient: (5/5): openvpn-2.5.11-2.el9.x86_64.rpm          2.0 MB/s | 655 kB     00:00
     vpnclient: --------------------------------------------------------------------------------
-    vpnclient: Total                                           388 kB/s | 1.2 MB     00:03
+    vpnclient: Total                                           474 kB/s | 1.2 MB     00:02
     vpnclient: Extra Packages for Enterprise Linux 9 - x86_64  1.6 MB/s | 1.6 kB     00:00
     vpnclient: Importing GPG key 0x3228467C:
     vpnclient:  Userid     : "Fedora (epel9) <epel@fedoraproject.org>"
