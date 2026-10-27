@@ -1,11 +1,54 @@
 # Настроить VPN между двумя ВМ в tun/tap режимах, замерить скорость в туннелях, сделать вывод об отличающихся показателях
 
-# поднимаю на сервере виртуальный интерфейс tun0 и запускаю утилиту iperf3 для замера скорости передачи данных через туннель
+# поднимаю на сервере виртуальный интерфейс tun0
+# запускаю утилиту iperf3 для замера скорости передачи данных через туннель
 [vagrant@vpnserver ~]$ date; sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
-Mon Oct 26 11:02:57 AM UTC 2026
+Mon Oct 26 01:23:15 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ip -brief addr show tun0
+Mon Oct 26 01:23:21 PM UTC 2026
+tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::8fb4:201c:deb9:23d7/64
+[vagrant@vpnserver ~]$ date; ss -ulnp | grep 1194
+Mon Oct 26 01:23:31 PM UTC 2026
+UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*
 [vagrant@vpnserver ~]$ date; sudo iperf3 -s -D
-Mon Oct 26 11:03:03 AM UTC 2026
+Mon Oct 26 01:23:37 PM UTC 2026
 [vagrant@vpnserver ~]$ date; ss -tlnp | grep 5201
-Mon Oct 26 11:03:08 AM UTC 2026
+Mon Oct 26 01:23:48 PM UTC 2026
 LISTEN 0      4096               *:5201            *:*
-[vagrant@vpnserver ~]$
+
+# на клиенте поднимаю виртуальный интерфейс tun0
+# проверяю пинг до сервера
+
+[vagrant@vpnclient ~]$ date; sudo openvpn --config /etc/openvpn/client-tun.conf --daemon
+Mon Oct 26 01:23:58 PM UTC 2026
+[vagrant@vpnclient ~]$ date; ip -brief addr show tun0
+Mon Oct 26 01:24:03 PM UTC 2026
+tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::ee39:7339:3751:668a/64
+[vagrant@vpnclient ~]$ date; ping -c 3 10.10.10.1
+Mon Oct 26 01:24:08 PM UTC 2026
+PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
+64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=1.80 ms
+64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.67 ms
+64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.45 ms
+
+--- 10.10.10.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2007ms
+rtt min/avg/max/mdev = 1.453/1.641/1.799/0.142 ms
+[vagrant@vpnclient ~]$ date; iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
+Mon Oct 26 01:24:14 PM UTC 2026
+Connecting to host 10.10.10.1, port 5201
+[  5] local 10.10.10.2 port 59288 connected to 10.10.10.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-5.00   sec  53.6 MBytes  90.0 Mbits/sec   26    251 KBytes     
+[  5]   5.00-10.00  sec  55.2 MBytes  92.7 Mbits/sec  225    210 KBytes     
+[  5]  10.00-15.00  sec  54.9 MBytes  92.1 Mbits/sec  156    142 KBytes     
+[  5]  15.00-20.00  sec  45.8 MBytes  76.8 Mbits/sec   85    111 KBytes     
+[  5]  20.00-25.00  sec  40.0 MBytes  67.1 Mbits/sec   12    199 KBytes     
+[  5]  25.00-30.00  sec  36.6 MBytes  61.4 Mbits/sec   86    127 KBytes     
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-30.00  sec   286 MBytes  80.0 Mbits/sec  590             sender
+[  5]   0.00-30.19  sec   286 MBytes  79.3 Mbits/sec                  receiver
+
+iperf Done.
+[vagrant@vpnclient ~]$
