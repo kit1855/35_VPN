@@ -1,111 +1,137 @@
 # Настроить VPN между двумя ВМ в tun/tap режимах, замерить скорость в туннелях,
 # сделать вывод об отличающихся показателях
 
-# запускаю опенвпн на сервере, поднимаю виртуальный сетевой интрефейс tan0
+###############
+##           ##
+##   T A N   ##
+##           ##
+###############
+
+# запускаю опенвпн на сервере согласно конфига в фоновом режиме
+# так же этим самым создаю виртуальный сетевой интрефейс tan0
 [vagrant@vpnserver ~]$ sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
-[vagrant@vpnserver ~]$ ip -brief addr show tun0
-tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::f6db:4c6e:77e8:60a8/64
 
-[vagrant@vpnserver ~]$ ss -ulnp | grep 1194
-UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*
+# проверка что вируальный сетевой интерфейс tan0 создан
+# и что опенвпн слушает порт 1194
+[vagrant@vpnserver ~]$ sudo ip -brief addr show tun0
+tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::cd8f:1034:332c:dd4a/64
+[vagrant@vpnserver ~]$ sudo ss -ulnp | grep 1194
+UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*    users:(("openvpn",pid=7447,fd=5))
 
+# запускаю iperf3 в режиме сервера, проверка что он слушает порт 5201
 [vagrant@vpnserver ~]$ sudo iperf3 -s -D
-[vagrant@vpnserver ~]$ ss -tlnp | grep 5201
-LISTEN 0      4096               *:5201            *:*
+[vagrant@vpnserver ~]$ sudo ss -tlnp | grep 5201
+LISTEN 0      4096               *:5201            *:*    users:(("iperf3",pid=7471,fd=3))
 
-# выключение процессов
-[vagrant@vpnserver ~]$ sudo pkill -9 iperf3
-[vagrant@vpnserver ~]$ sudo pkill -9 openvpn
-
-# запускаю опенвпн на клиенте, поднимаю виртуальный сетевой интрефейс tan0
+# запускаю опенвпн на клиенте согласно конфига в фоновом режиме
+# так же этим самым создаю виртуальный сетевой интрефейс tan0
 [vagrant@vpnclient ~]$ sudo openvpn --config /etc/openvpn/client-tun.conf --daemon
-[vagrant@vpnclient ~]$ ip -brief addr show tun0
-tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::8d5:589b:e510:f6a8/64
 
+# проверка что вируальный сетевой интерфейс tan0 создан
+[vagrant@vpnclient ~]$ sudo ip -brief addr show tun0
+tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::dfb6:58e2:50ba:99a8/64
 
+# проверяю пингом связанность через туннель
 [vagrant@vpnclient ~]$ ping -c 3 10.10.10.1
 PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
-64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=5.16 ms
-64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.25 ms
-64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.21 ms
+64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=1.41 ms
+64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.35 ms
+64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.92 ms
 
 --- 10.10.10.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2074ms
-rtt min/avg/max/mdev = 1.214/2.538/5.157/1.851 ms
+3 packets transmitted, 3 received, 0% packet loss, time 2005ms
+rtt min/avg/max/mdev = 1.349/1.558/1.922/0.257 ms
 
-
+# запускаю iperf3 для проверки скорости через туннель
 [vagrant@vpnclient ~]$ iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
 Connecting to host 10.10.10.1, port 5201
-[  5] local 10.10.10.2 port 35444 connected to 10.10.10.1 port 5201
+[  5] local 10.10.10.2 port 54602 connected to 10.10.10.1 port 5201
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-5.00   sec  54.6 MBytes  91.5 Mbits/sec  137    187 KBytes     
-[  5]   5.00-10.00  sec  56.3 MBytes  94.4 Mbits/sec  218    179 KBytes     
-[  5]  10.00-15.00  sec  47.7 MBytes  80.0 Mbits/sec  155    131 KBytes     
-[  5]  15.00-20.00  sec  41.2 MBytes  69.1 Mbits/sec   53    192 KBytes     
-[  5]  20.00-25.00  sec  43.2 MBytes  72.4 Mbits/sec  132    129 KBytes     
-[  5]  25.00-30.00  sec  40.5 MBytes  67.9 Mbits/sec   46    148 KBytes     
+[  5]   0.00-5.00   sec  54.1 MBytes  90.7 Mbits/sec  563    127 KBytes     
+[  5]   5.00-10.00  sec  55.2 MBytes  92.6 Mbits/sec   85    150 KBytes     
+[  5]  10.00-15.00  sec  46.6 MBytes  78.2 Mbits/sec   67    140 KBytes     
+[  5]  15.00-20.00  sec  38.8 MBytes  65.1 Mbits/sec  127    115 KBytes     
+[  5]  20.00-25.00  sec  41.0 MBytes  68.7 Mbits/sec  119    124 KBytes     
+[  5]  25.00-30.00  sec  41.8 MBytes  70.1 Mbits/sec   93    161 KBytes     
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-30.00  sec   283 MBytes  79.2 Mbits/sec  741             sender
-[  5]   0.00-30.13  sec   282 MBytes  78.5 Mbits/sec                  receiver
+[  5]   0.00-30.00  sec   277 MBytes  77.6 Mbits/sec  1054             sender
+[  5]   0.00-30.09  sec   276 MBytes  77.0 Mbits/sec                  receiver
 
 iperf Done.
 
-# выключение процессов
-[vagrant@vpnclient ~]$ sudo pkill -9 openvpn
-[vagrant@vpnclient ~]$ sudo pkill -9 iperf3
+# выключение процессов на сервере
+[vagrant@vpnserver ~]$ sudo pkill -9 iperf3; sudo pkill -9 openvpn
+
+# выключение процессов на клиенте
+[vagrant@vpnclient ~]$ sudo pkill -9 iperf3; sudo pkill -9 openvpn
 
 
 
+###############
+##           ##
+##   T A P   ##
+##           ##
+###############
 
-[vagrant@vpnserver ~]$ sudo openvpn --config /etc/openvpn/server-tap.conf --daemon
-[vagrant@vpnserver ~]$ ip -brief addr show tap0
-tap0             UNKNOWN        10.10.10.1/24 fe80::bcf3:bbff:fe50:39d7/64
-[vagrant@vpnserver ~]$ ss -ulnp | grep 1194
-UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*
+# запускаю опенвпн на сервере согласно конфига в фоновом режиме
+# так же этим самым создаю виртуальный сетевой интрефейс tan0
+[vagrant@vpnserver ~]$ sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
+
+# проверка что вируальный сетевой интерфейс tan0 создан
+# и что опенвпн слушает порт 1194
+[vagrant@vpnserver ~]$ sudo ip -brief addr show tun0
+tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::cd8f:1034:332c:dd4a/64
+[vagrant@vpnserver ~]$ sudo ss -ulnp | grep 1194
+UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*    users:(("openvpn",pid=7447,fd=5))
+
+# запускаю iperf3 в режиме сервера, проверка что он слушает порт 5201
 [vagrant@vpnserver ~]$ sudo iperf3 -s -D
-[vagrant@vpnserver ~]$ ss -tlnp | grep 5201
-LISTEN 0      4096               *:5201            *:*
+[vagrant@vpnserver ~]$ sudo ss -tlnp | grep 5201
+LISTEN 0      4096               *:5201            *:*    users:(("iperf3",pid=7471,fd=3))
 
+# запускаю опенвпн на клиенте согласно конфига в фоновом режиме
+# так же этим самым создаю виртуальный сетевой интрефейс tan0
+[vagrant@vpnclient ~]$ sudo openvpn --config /etc/openvpn/client-tun.conf --daemon
 
-# выключение процессов
-[vagrant@vpnserver ~]$ sudo pkill -9 iperf3
-[vagrant@vpnserver ~]$ sudo pkill -9 openvpn
+# проверка что вируальный сетевой интерфейс tan0 создан
+[vagrant@vpnclient ~]$ sudo ip -brief addr show tun0
+tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::dfb6:58e2:50ba:99a8/64
 
-
-
-
-
-[vagrant@vpnclient ~]$ sudo openvpn --config /etc/openvpn/client-tap.conf --daemon
-[vagrant@vpnclient ~]$ ip -brief addr show tap0
-tap0             UNKNOWN        10.10.10.2/24 fe80::acb7:14ff:fe4d:979b/64
+# проверяю пингом связанность через туннель
 [vagrant@vpnclient ~]$ ping -c 3 10.10.10.1
 PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
-64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=3.60 ms
-64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.29 ms
-64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.47 ms
+64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=1.41 ms
+64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.35 ms
+64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.92 ms
 
 --- 10.10.10.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2009ms
-rtt min/avg/max/mdev = 1.285/2.117/3.597/1.049 ms
-[vagrant@vpnclient ~]$ date; iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
-Tue Oct 27 06:33:27 PM UTC 2026
+3 packets transmitted, 3 received, 0% packet loss, time 2005ms
+rtt min/avg/max/mdev = 1.349/1.558/1.922/0.257 ms
+
+# запускаю iperf3 для проверки скорости через туннель
+[vagrant@vpnclient ~]$ iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
 Connecting to host 10.10.10.1, port 5201
-[  5] local 10.10.10.2 port 41364 connected to 10.10.10.1 port 5201
+[  5] local 10.10.10.2 port 54602 connected to 10.10.10.1 port 5201
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-5.00   sec  52.4 MBytes  87.9 Mbits/sec  617    162 KBytes     
-[  5]   5.00-10.00  sec  52.1 MBytes  87.4 Mbits/sec   84    171 KBytes     
-[  5]  10.00-15.00  sec  44.7 MBytes  75.1 Mbits/sec   98    216 KBytes     
-[  5]  15.00-20.00  sec  38.4 MBytes  64.4 Mbits/sec   80    223 KBytes     
-[  5]  20.00-25.00  sec  39.7 MBytes  66.6 Mbits/sec   82    200 KBytes     
-[  5]  25.00-30.00  sec  39.9 MBytes  67.0 Mbits/sec   98    163 KBytes     
+[  5]   0.00-5.00   sec  54.1 MBytes  90.7 Mbits/sec  563    127 KBytes     
+[  5]   5.00-10.00  sec  55.2 MBytes  92.6 Mbits/sec   85    150 KBytes     
+[  5]  10.00-15.00  sec  46.6 MBytes  78.2 Mbits/sec   67    140 KBytes     
+[  5]  15.00-20.00  sec  38.8 MBytes  65.1 Mbits/sec  127    115 KBytes     
+[  5]  20.00-25.00  sec  41.0 MBytes  68.7 Mbits/sec  119    124 KBytes     
+[  5]  25.00-30.00  sec  41.8 MBytes  70.1 Mbits/sec   93    161 KBytes     
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-30.00  sec   267 MBytes  74.7 Mbits/sec  1059             sender
-[  5]   0.00-30.45  sec   265 MBytes  73.1 Mbits/sec                  receiver
+[  5]   0.00-30.00  sec   277 MBytes  77.6 Mbits/sec  1054             sender
+[  5]   0.00-30.09  sec   276 MBytes  77.0 Mbits/sec                  receiver
 
 iperf Done.
 
-# выключение процессов
-[vagrant@vpnclient ~]$ sudo pkill -9 openvpn
-[vagrant@vpnclient ~]$ sudo pkill -9 iperf3
+# выключение процессов на сервере
+[vagrant@vpnserver ~]$ sudo pkill -9 iperf3; sudo pkill -9 openvpn
+
+# выключение процессов на клиенте
+[vagrant@vpnclient ~]$ sudo pkill -9 iperf3; sudo pkill -9 openvpn
+
+
+
