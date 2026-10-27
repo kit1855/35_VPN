@@ -1,54 +1,166 @@
 # Настроить VPN между двумя ВМ в tun/tap режимах, замерить скорость в туннелях, сделать вывод об отличающихся показателях
 
-# поднимаю на сервере виртуальный интерфейс tun0
-# запускаю утилиту iperf3 для замера скорости передачи данных через туннель
-[vagrant@vpnserver ~]$ date; sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
-Mon Oct 26 01:23:15 PM UTC 2026
-[vagrant@vpnserver ~]$ date; ip -brief addr show tun0
-Mon Oct 26 01:23:21 PM UTC 2026
-tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::8fb4:201c:deb9:23d7/64
+PS D:\linux\Professional\35 Мосты, туннели и VPN\dz5> vagrant ssh vpnserver
+vagrant@127.0.0.1's password:
+[vagrant@vpnserver ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:29:06 PM UTC 2026
+[vagrant@vpnserver ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:29:10 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ps aux | grep -E 'openvpn|iperf3' | grep -v grep
+Tue Oct 27 06:29:14 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ss -tlnp | grep 5201
+Tue Oct 27 06:29:20 PM UTC 2026
 [vagrant@vpnserver ~]$ date; ss -ulnp | grep 1194
-Mon Oct 26 01:23:31 PM UTC 2026
+Tue Oct 27 06:29:32 PM UTC 2026
+[vagrant@vpnserver ~]$ date; sudo openvpn --config /etc/openvpn/server-tun.conf --daemon
+Tue Oct 27 06:30:04 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ip -brief addr show tun0
+Tue Oct 27 06:30:16 PM UTC 2026
+tun0             UNKNOWN        10.10.10.1 peer 10.10.10.2/32 fe80::f6db:4c6e:77e8:60a8/64
+[vagrant@vpnserver ~]$ date; ss -ulnp | grep 1194
+Tue Oct 27 06:30:22 PM UTC 2026
 UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*
 [vagrant@vpnserver ~]$ date; sudo iperf3 -s -D
-Mon Oct 26 01:23:37 PM UTC 2026
+Tue Oct 27 06:30:34 PM UTC 2026
 [vagrant@vpnserver ~]$ date; ss -tlnp | grep 5201
-Mon Oct 26 01:23:48 PM UTC 2026
+Tue Oct 27 06:30:41 PM UTC 2026
 LISTEN 0      4096               *:5201            *:*
+[vagrant@vpnserver ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:31:51 PM UTC 2026
+[vagrant@vpnserver ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:31:56 PM UTC 2026
 
-# на клиенте поднимаю виртуальный интерфейс tun0
-# проверяю пинг до сервера
 
+
+
+
+PS D:\linux\Professional\35 Мосты, туннели и VPN\dz5> vagrant ssh vpnclient
+vagrant@127.0.0.1's password:
+[vagrant@vpnclient ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:29:41 PM UTC 2026
+[vagrant@vpnclient ~]$
+[vagrant@vpnclient ~]$
+[vagrant@vpnclient ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:29:51 PM UTC 2026
+[vagrant@vpnclient ~]$ date; ps aux | grep -E 'openvpn|iperf3' | grep -v grep
+Tue Oct 27 06:29:55 PM UTC 2026
 [vagrant@vpnclient ~]$ date; sudo openvpn --config /etc/openvpn/client-tun.conf --daemon
-Mon Oct 26 01:23:58 PM UTC 2026
+Tue Oct 27 06:30:51 PM UTC 2026
+[vagrant@vpnclient ~]$
 [vagrant@vpnclient ~]$ date; ip -brief addr show tun0
-Mon Oct 26 01:24:03 PM UTC 2026
-tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::ee39:7339:3751:668a/64
+Tue Oct 27 06:30:59 PM UTC 2026
+tun0             UNKNOWN        10.10.10.2 peer 10.10.10.1/32 fe80::8d5:589b:e510:f6a8/64
 [vagrant@vpnclient ~]$ date; ping -c 3 10.10.10.1
-Mon Oct 26 01:24:08 PM UTC 2026
+Tue Oct 27 06:31:05 PM UTC 2026
 PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
-64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=1.80 ms
-64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.67 ms
-64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.45 ms
+64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=5.16 ms
+64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.25 ms
+64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.21 ms
 
 --- 10.10.10.1 ping statistics ---
-3 packets transmitted, 3 received, 0% packet loss, time 2007ms
-rtt min/avg/max/mdev = 1.453/1.641/1.799/0.142 ms
+3 packets transmitted, 3 received, 0% packet loss, time 2074ms
+rtt min/avg/max/mdev = 1.214/2.538/5.157/1.851 ms
 [vagrant@vpnclient ~]$ date; iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
-Mon Oct 26 01:24:14 PM UTC 2026
+Tue Oct 27 06:31:12 PM UTC 2026
 Connecting to host 10.10.10.1, port 5201
-[  5] local 10.10.10.2 port 59288 connected to 10.10.10.1 port 5201
+[  5] local 10.10.10.2 port 35444 connected to 10.10.10.1 port 5201
 [ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-5.00   sec  53.6 MBytes  90.0 Mbits/sec   26    251 KBytes     
-[  5]   5.00-10.00  sec  55.2 MBytes  92.7 Mbits/sec  225    210 KBytes     
-[  5]  10.00-15.00  sec  54.9 MBytes  92.1 Mbits/sec  156    142 KBytes     
-[  5]  15.00-20.00  sec  45.8 MBytes  76.8 Mbits/sec   85    111 KBytes     
-[  5]  20.00-25.00  sec  40.0 MBytes  67.1 Mbits/sec   12    199 KBytes     
-[  5]  25.00-30.00  sec  36.6 MBytes  61.4 Mbits/sec   86    127 KBytes     
+[  5]   0.00-5.00   sec  54.6 MBytes  91.5 Mbits/sec  137    187 KBytes     
+[  5]   5.00-10.00  sec  56.3 MBytes  94.4 Mbits/sec  218    179 KBytes     
+[  5]  10.00-15.00  sec  47.7 MBytes  80.0 Mbits/sec  155    131 KBytes     
+[  5]  15.00-20.00  sec  41.2 MBytes  69.1 Mbits/sec   53    192 KBytes     
+[  5]  20.00-25.00  sec  43.2 MBytes  72.4 Mbits/sec  132    129 KBytes     
+[  5]  25.00-30.00  sec  40.5 MBytes  67.9 Mbits/sec   46    148 KBytes     
 - - - - - - - - - - - - - - - - - - - - - - - - -
 [ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-30.00  sec   286 MBytes  80.0 Mbits/sec  590             sender
-[  5]   0.00-30.19  sec   286 MBytes  79.3 Mbits/sec                  receiver
+[  5]   0.00-30.00  sec   283 MBytes  79.2 Mbits/sec  741             sender
+[  5]   0.00-30.13  sec   282 MBytes  78.5 Mbits/sec                  receiver
 
 iperf Done.
+[vagrant@vpnclient ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:32:00 PM UTC 2026
+[vagrant@vpnclient ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:32:06 PM UTC 2026
+[vagrant@vpnclient ~]$
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$
+[vagrant@vpnserver ~]$ date; sudo openvpn --config /etc/openvpn/server-tap.conf --daemon
+Tue Oct 27 06:32:21 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ip -brief addr show tap0
+Tue Oct 27 06:32:25 PM UTC 2026
+tap0             UNKNOWN        10.10.10.1/24 fe80::bcf3:bbff:fe50:39d7/64
+[vagrant@vpnserver ~]$ date; ss -ulnp | grep 1194
+Tue Oct 27 06:32:31 PM UTC 2026
+UNCONN 0      0            0.0.0.0:1194      0.0.0.0:*
+[vagrant@vpnserver ~]$ date; sudo iperf3 -s -D
+Tue Oct 27 06:32:45 PM UTC 2026
+[vagrant@vpnserver ~]$ date; ss -tlnp | grep 5201
+Tue Oct 27 06:32:50 PM UTC 2026
+LISTEN 0      4096               *:5201            *:*
+[vagrant@vpnserver ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:34:09 PM UTC 2026
+[vagrant@vpnserver ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:34:13 PM UTC 2026
+[vagrant@vpnserver ~]$
+
+
+
+
+
+[vagrant@vpnclient ~]$ date; sudo openvpn --config /etc/openvpn/client-tap.conf --daemon
+Tue Oct 27 06:33:02 PM UTC 2026
+[vagrant@vpnclient ~]$ date; ip -brief addr show tap0
+Tue Oct 27 06:33:09 PM UTC 2026
+tap0             UNKNOWN        10.10.10.2/24 fe80::acb7:14ff:fe4d:979b/64
+[vagrant@vpnclient ~]$ date; ping -c 3 10.10.10.1
+Tue Oct 27 06:33:16 PM UTC 2026
+PING 10.10.10.1 (10.10.10.1) 56(84) bytes of data.
+64 bytes from 10.10.10.1: icmp_seq=1 ttl=64 time=3.60 ms
+64 bytes from 10.10.10.1: icmp_seq=2 ttl=64 time=1.29 ms
+64 bytes from 10.10.10.1: icmp_seq=3 ttl=64 time=1.47 ms
+
+--- 10.10.10.1 ping statistics ---
+3 packets transmitted, 3 received, 0% packet loss, time 2009ms
+rtt min/avg/max/mdev = 1.285/2.117/3.597/1.049 ms
+[vagrant@vpnclient ~]$ date; iperf3 -c 10.10.10.1 -t 30 -i 5 -l 150
+Tue Oct 27 06:33:27 PM UTC 2026
+Connecting to host 10.10.10.1, port 5201
+[  5] local 10.10.10.2 port 41364 connected to 10.10.10.1 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-5.00   sec  52.4 MBytes  87.9 Mbits/sec  617    162 KBytes     
+[  5]   5.00-10.00  sec  52.1 MBytes  87.4 Mbits/sec   84    171 KBytes     
+[  5]  10.00-15.00  sec  44.7 MBytes  75.1 Mbits/sec   98    216 KBytes     
+[  5]  15.00-20.00  sec  38.4 MBytes  64.4 Mbits/sec   80    223 KBytes     
+[  5]  20.00-25.00  sec  39.7 MBytes  66.6 Mbits/sec   82    200 KBytes     
+[  5]  25.00-30.00  sec  39.9 MBytes  67.0 Mbits/sec   98    163 KBytes     
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-30.00  sec   267 MBytes  74.7 Mbits/sec  1059             sender
+[  5]   0.00-30.45  sec   265 MBytes  73.1 Mbits/sec                  receiver
+
+iperf Done.
+[vagrant@vpnclient ~]$ date; sudo pkill -9 openvpn
+Tue Oct 27 06:34:18 PM UTC 2026
+[vagrant@vpnclient ~]$ date; sudo pkill -9 iperf3
+Tue Oct 27 06:34:33 PM UTC 2026
 [vagrant@vpnclient ~]$
