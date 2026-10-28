@@ -176,16 +176,6 @@ Created symlink /etc/systemd/system/multi-user.target.wants/openvpn-server@serve
 cat /home/vagrant/client1.ovpn
 Затем скопируй вывод и вставь в файл client1.ovpn на хосте.
 ============================================================
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
-[vagrant@vpnserver ~]$
 [vagrant@vpnserver ~]$ ls
 client1.ovpn  openvpn-ca  setup_openvpn.sh
 [vagrant@vpnserver ~]$ cat client1.ovpn
@@ -364,6 +354,7 @@ cbff4cd227461da24ff24c0304fbf66e
 </tls-auth>
 
 # пинг до сервера с хоста до подключения опвн и после подключения опвн
+# прилагаю скриншот dz_2_2.jpg
 PS C:\Users\Lenovo> ping 10.8.0.1
 
 Обмен пакетами с 10.8.0.1 по с 32 байтами данных:
