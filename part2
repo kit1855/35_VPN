@@ -1,0 +1,306 @@
+# Поднять RAS на базе OpenVPN с клиентскими сертификатами, подключиться с локальной машины на ВМ
+этот пункт выполняется скриптом.
+полученный файл клиент.овпн копируется на хостовую машину и при помощи программы ОпенВПН_Коннект
+делается подключение к серверу и проверяется работоспособность туннеля пингом.
+
+# запуск скрипта и просмотр готового файла ovpn
+[vagrant@vpnserver ~]$ sudo ./setup_openvpn.sh
+>>> [1/7] Установка пакетов...
+Last metadata expiration check: 0:38:34 ago on Wed 28 Oct 2026 05:30:58 PM UTC.
+Package openvpn-2.5.11-2.el9.x86_64 is already installed.
+Package easy-rsa-3.2.1-2.el9.noarch is already installed.
+Package iptables-legacy-1.8.10-11.1.el9.x86_64 is already installed.
+Package iptables-legacy-libs-1.8.10-11.1.el9.x86_64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+>>> [2/7] Подготовка PKI (easy-rsa) в /home/vagrant...
+
+Notice
+------
+'init-pki' complete; you may now create a CA or requests.
+
+Your newly created PKI dir is:
+* /home/vagrant/openvpn-ca/pki
+
+Using Easy-RSA configuration:
+* undefined
+>>> [3/7] Создание CA и серверных сертификатов...
+..+...+.....+...+............+.......+............+.....+...+.+..............+.......+...+..+.+...+......+.....+...+...+....+.....+++++++++++++++++++++++++++++++++++++++*..+.......+...+.....+.+......+++++++++++++++++++++++++++++++++++++++*.+..+.+.....+.+........+.++++++
+.+...+......+...+...+.........+.............+..+...............+....+..+....+...+++++++++++++++++++++++++++++++++++++++*.............+.+.....+....+......+............+...+...........+.+..+...+.......+..+.+.........+...+..+......+...+.......+.........+.....+...+.+.........+...........+.+....................+.+..+......+.+...+...+..+......+.+...+........+...+.......+...+++++++++++++++++++++++++++++++++++++++*..+.......+..+.+.....+............+...+.......+......+.....+.+...+..+..........+.....+...............+.+...............+...+.....+................+...+..+...+...+...+...................+.....+.+.....+.+......+..+..........+.....+..........+..+....+.........+..+.+.....+...............+...+....+......+.....+.+.....+.+...+......+.....+.+..+.....................++++++
+
+Notice
+------
+CA creation complete. Your new CA certificate is at:
+* /home/vagrant/openvpn-ca/pki/ca.crt
+
+Create an OpenVPN TLS-AUTH|TLS-CRYPT-V1 key now: See 'help gen-tls'
+
+Build-ca completed successfully.
+
+...........+....+++++++++++++++++++++++++++++++++++++++*.........+.............+++++++++++++++++++++++++++++++++++++++*.+...............+...+.+..............+...+.......+...+..+.......+.....+...+......+....+..+...+...+.......+...+...............+.........+.....+......+....+......+...+..+.......+..+....+...........+.+........+......................+.....+.......+......+..............+...+....+.........+.....+....+..+.+..+.......+........+.+..+..........+........+.+.........+.........+....................+......+....+........+....+.....+.+.........+........+.+..+.......+........+....+.....+.+............+..+......+....+..............+.........+...+.........+.+.................+...+...+......+.+........+.+...........+.........+...............+....+..+.......+......+..+...+.+...+...........+..............................+.......+...+...........+..........+...+...............+...+.........+...+.....+.+.....+......+...+.+..+.......+........+.......+..+.........+....+.....++++++
+...+....+..+.........+...+.+..+.......+............+...+.....+............+.+..+.......+++++++++++++++++++++++++++++++++++++++*..+..........+...+.....+......+....+......+...+..+.+.....+.......+...+............+........+.......+..+.............+........+...+.+...+..+.+..+.+.....+++++++++++++++++++++++++++++++++++++++*..............+.......+........+....+..................+...+...+..+....+...+.....+.......+...+...+.....+..........+........+......+...+.+.........+..+.+..+..................+..........+..++++++
+-----
+
+Notice
+------
+Private-Key and Public-Certificate-Request files created.
+Your files are:
+* req: /home/vagrant/openvpn-ca/pki/reqs/server.req
+* key: /home/vagrant/openvpn-ca/pki/private/server.key
+
+Using configuration from /home/vagrant/openvpn-ca/pki/a488b349/temp.1.1
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+commonName            :ASN.1 12:'server'
+Certificate is to be certified until Jan 30 18:09:35 2029 GMT (825 days)
+
+Write out database with 1 new entries
+Database updated
+which: no bc in (/sbin:/bin:/usr/sbin:/usr/bin)
+
+Notice
+------
+Inline file created:
+* /home/vagrant/openvpn-ca/pki/inline/private/server.inline
+
+
+Notice
+------
+Certificate created at:
+* /home/vagrant/openvpn-ca/pki/issued/server.crt
+
+Generating DH parameters, 2048 bit long safe prime
+.................................................................+........................................................................+..................................................................................................................................................................................................................................................................................................+..............+................................................................................................................................................................+.+...............................................................+..........................................................................................................................................+...................................................+.............+............................................................................................................................................................................................................................................................................................+.................................................................................................+..............................................................................................................................................................................................................................................................................................................................................................+....................................................................................+.....................................................................................................................................................................................................................+................................................+................................................................................+........................................................+.........................................................................................+..............................................................................................................................................................................................+........................................................................................................................................................................................................................................................................................................................................................+....................+.................................................................................+...............................................................................+..........................................................................................................................................................+............................................................................................................+..........................................................................................................................................................................................................................................+......................+..........................................................................................................................................+..............................................................................................................................................+......+....................................................................................................................................................................................................................................................................+.................+.......+...........................................................................................+...........................................+....................................................................................+.........................................................................................................................................................................................................................................+...............................................................................+...........................................................................................+................................................................................++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*++*
+DH parameters appear to be ok.
+
+Notice
+------
+
+DH parameters of size 2048 created at:
+* /home/vagrant/openvpn-ca/pki/dh.pem
+
+2026-10-28 18:10:34 WARNING: Using --genkey --secret filename is DEPRECATED.  Use --genkey secret filename instead.
+>>> [4/7] Генерация клиентского сертификата (client1)...
+...+............+++++++++++++++++++++++++++++++++++++++*.+........+...+.........+...+.......+...+........+...+......+.+.................+...+....+...+...+++++++++++++++++++++++++++++++++++++++*.+...+......+...+.+......+.....+.+..+.+..+...+....+..+.+..+..........+......+...........+..........+...........+...+....+...+...+.........+.....+............+.+.....+...+.........+.............+...+..+.......+........+.............+..+...+.+........+......+.......+........+.+.....+.........+....+..+.........+.+...+...+........+....+..+...+..........+......+......+........+............+...+.......+.....+....+..+....+...........+....+...++++++
+.....+...+++++++++++++++++++++++++++++++++++++++*.......+.........+++++++++++++++++++++++++++++++++++++++*...+.....+......+.............+...........+.+..+...+....+...+..+....+.........+......+..+............+......+.+...........+...+...............+.+...+......+..............+...+............+.............+.........+.....+.+.........+......+...+..+...+............+...+......+.............+..+...+...............+...+.......+...+...+......+.....+.+........+.+......+..+...+..........+..+............+.........+......+...+.++++++
+-----
+
+Notice
+------
+Private-Key and Public-Certificate-Request files created.
+Your files are:
+* req: /home/vagrant/openvpn-ca/pki/reqs/client1.req
+* key: /home/vagrant/openvpn-ca/pki/private/client1.key
+
+Using configuration from /home/vagrant/openvpn-ca/pki/f449a9c8/temp.1.1
+Check that the request matches the signature
+Signature ok
+The Subject's Distinguished Name is as follows
+commonName            :ASN.1 12:'client1'
+Certificate is to be certified until Jan 30 18:10:36 2029 GMT (825 days)
+
+Write out database with 1 new entries
+Database updated
+which: no bc in (/sbin:/bin:/usr/sbin:/usr/bin)
+
+Notice
+------
+Inline file created:
+* /home/vagrant/openvpn-ca/pki/inline/private/client1.inline
+
+
+Notice
+------
+Certificate created at:
+* /home/vagrant/openvpn-ca/pki/issued/client1.crt
+
+>>> [5/7] Копирование файлов и создание server.conf...
+>>> [6/7] Настройка IP-форвардинга и NAT (iptables)...
+net.ipv4.ip_forward = 1
+Интерфейс для NAT: eth0
+>>> [7/7] Запуск OpenVPN и сборка client1.ovpn в /home/vagrant...
+============================================================
+Готово! Файл client1.ovpn создан по пути: /home/vagrant/client1.ovpn
+Чтобы забрать его, выполни команду (без sudo):
+cat /home/vagrant/client1.ovpn
+Затем скопируй вывод и вставь в файл client1.ovpn на хосте.
+============================================================
+[vagrant@vpnserver ~]$ ls
+client1.ovpn  openvpn-ca  setup_openvpn.sh
+[vagrant@vpnserver ~]$ cat client1.ovpn
+client
+dev tun
+proto udp
+remote 192.168.50.10 1194
+resolv-retry infinite
+nobind
+persist-key
+persist-tun
+remote-cert-tls server
+cipher AES-256-CBC
+verb 3
+key-direction 1
+<ca>
+-----BEGIN CERTIFICATE-----
+MIIDSzCCAjOgAwIBAgIUec5muEeXCPzdgrsWEelrsrt25wAwDQYJKoZIhvcNAQEL
+BQAwFjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjYxMDI4MTgwOTM0WhcNMzYx
+MDI1MTgwOTM0WjAWMRQwEgYDVQQDDAtFYXN5LVJTQSBDQTCCASIwDQYJKoZIhvcN
+AQEBBQADggEPADCCAQoCggEBAJzi2kyBONnRGxe1xrEAc4xvc7rU5KLdhltPZfGh
+E5X/LHUmjy4v1tKFpgYHdEEcemFaaLsuIK1WFdrRs2aqQ1Q1Duldl7tBp8mK6qv1
+Z2WE6V/pfg8Ifs2LPh0eaBtYPKcZNge7ioBFpp2OAEU5rxGvOMv/EdmDEgIvQWJo
+xzfelyHaMPy5kPVyW5r0i4houm2KjQABao0v6Wd3z9EnL2Hrhb6NAAtF71tRV+4l
+BWTMOAsrBNBZxW9/jch1/n1uYVGCcaETXlrJNyQMCN3pZ163kAL3BVRggrnab2ME
+Yse4rofs0+MHvMP+zH6f6pHdAW34M1KcPEflsfEjO0so8/kCAwEAAaOBkDCBjTAM
+BgNVHRMEBTADAQH/MB0GA1UdDgQWBBTbHWanE5LiQw0ub7W5YPq8e7a9WTBRBgNV
+HSMESjBIgBTbHWanE5LiQw0ub7W5YPq8e7a9WaEapBgwFjEUMBIGA1UEAwwLRWFz
+eS1SU0EgQ0GCFHnOZrhHlwj83YK7FhHpa7K7ducAMAsGA1UdDwQEAwIBBjANBgkq
+hkiG9w0BAQsFAAOCAQEAlyOlXY8Wkd1MDp2JTkbIjbkmb6K1hH42xlM/ypM6krIk
+s4OsP7iFhEqX2rPVIaMmOb51svNLs3yES7NZyfANTNZM+Z9Lo7D8XZ6yUJH30tdw
+PILWVsqkl6Z677aWabLNnzMSEPwsHHIt0/IxyV2eVnwvotCsx3EwriQtDE34pt0y
+DUMbKNfzeO4T9yQwuK3NysdCBIDpdUKV3VRGLosIDHpMixMqVebo1uyqH49AOmbe
+uYWbiCOEqGlVAy7Gygm6JpmMT8Dc5tcBLoZCKRCLBHhvrdqohEUD/E2QSD+nBfUg
+ogBfNkkeLM6gCJ0mv26OkpvFSNdwvVDh9/auSoEgag==
+-----END CERTIFICATE-----
+</ca>
+<cert>
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            aa:d3:00:3d:73:49:5f:b7:7e:78:0f:29:b8:e4:26:6c
+        Signature Algorithm: sha256WithRSAEncryption
+        Issuer: CN=Easy-RSA CA
+        Validity
+            Not Before: Oct 28 18:10:36 2026 GMT
+            Not After : Jan 30 18:10:36 2029 GMT
+        Subject: CN=client1
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:90:d1:6c:fb:d7:22:3e:fd:d7:e1:7d:b3:8e:56:
+                    b6:e6:60:46:e0:a7:a4:ad:4c:23:00:e8:fb:1a:1b:
+                    7a:6a:96:76:0d:79:77:0f:bf:02:60:d1:40:63:1f:
+                    f6:14:ae:46:2f:c5:e8:22:74:3e:1a:23:ad:75:f3:
+                    88:a4:cf:f5:21:ad:e9:76:6f:b7:fd:40:d5:6b:15:
+                    76:64:2e:ae:4c:33:43:09:b4:da:e9:2d:d8:4a:b5:
+                    86:aa:ba:2d:35:2d:72:5b:a5:98:3a:93:f6:1d:10:
+                    ad:15:ac:42:91:3b:c4:15:be:a0:8c:fb:f5:e8:89:
+                    41:f6:f1:eb:03:b0:eb:30:fe:5b:ce:4a:64:fc:5d:
+                    04:04:46:65:8d:05:06:67:50:07:2c:4b:d4:f5:18:
+                    a5:fe:16:6f:32:95:22:53:8b:23:b7:44:7e:2a:fb:
+                    f7:82:1b:5a:54:39:a3:63:19:8f:08:b4:3b:49:69:
+                    a0:3a:33:f1:d9:dc:a9:46:2e:5a:8e:20:71:10:d4:
+                    b7:48:9a:6e:30:d3:be:44:f0:21:c9:e1:34:f4:94:
+                    e6:25:5e:24:e4:c1:a7:15:b8:01:97:13:8b:a0:7f:
+                    3c:1d:bb:50:89:e6:46:14:83:e6:fb:12:f9:0e:e5:
+                    fd:44:b9:d2:da:20:d5:21:51:b9:88:a9:80:45:c0:
+                    6e:9d
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints:
+                CA:FALSE
+            X509v3 Subject Key Identifier:
+                D3:C2:49:5B:CF:23:F1:1B:C8:28:91:2F:E8:BB:D0:EF:0A:82:6B:60
+            X509v3 Authority Key Identifier:
+                keyid:DB:1D:66:A7:13:92:E2:43:0D:2E:6F:B5:B9:60:FA:BC:7B:B6:BD:59
+                DirName:/CN=Easy-RSA CA
+                serial:79:CE:66:B8:47:97:08:FC:DD:82:BB:16:11:E9:6B:B2:BB:76:E7:00
+            X509v3 Extended Key Usage:
+                TLS Web Client Authentication
+            X509v3 Key Usage:
+                Digital Signature
+    Signature Algorithm: sha256WithRSAEncryption
+    Signature Value:
+        08:8c:80:5e:4b:05:65:e1:02:04:a9:df:4e:d6:c1:8a:c8:fe:
+        1d:80:13:d3:10:59:99:c3:1d:2e:a3:d6:06:89:f6:ac:d2:fa:
+        fe:a0:0b:65:b6:bd:8d:26:77:e5:99:f1:75:3c:f3:52:3e:50:
+        89:0b:3c:f8:76:5f:89:b3:23:ff:97:11:cc:e2:f8:10:75:55:
+        55:85:dd:72:df:d0:cd:c1:49:95:6f:8d:5e:3b:7f:a5:c8:a2:
+        70:5c:d2:5d:a7:70:63:d0:0d:ee:9a:96:44:6a:94:75:cd:5d:
+        a2:d9:24:48:13:e3:16:c0:d1:6f:d3:5f:93:8b:45:f1:84:5f:
+        5e:15:fb:96:24:07:bb:7b:3c:89:b0:e8:6d:a3:b2:c7:9d:1c:
+        11:4b:b6:87:b8:17:43:19:1c:4e:72:18:b6:15:0d:d0:c9:0c:
+        6b:8f:20:ff:78:19:fa:29:e6:a8:9d:34:a0:5d:5e:29:5f:d1:
+        e2:33:9f:d3:80:86:98:2a:2a:56:f8:83:a6:9f:9f:a5:19:0b:
+        2f:8f:b9:32:0f:ef:15:a4:3f:43:69:5b:a8:ef:9e:3b:14:a9:
+        b8:39:9f:88:3f:d8:48:68:4b:f3:07:d4:d8:1a:41:53:68:1f:
+        59:69:6f:47:95:57:9f:5a:a5:7c:5e:58:6c:6e:8e:29:4a:d5:
+        5a:8c:da:97
+-----BEGIN CERTIFICATE-----
+MIIDVjCCAj6gAwIBAgIRAKrTAD1zSV+3fngPKbjkJmwwDQYJKoZIhvcNAQELBQAw
+FjEUMBIGA1UEAwwLRWFzeS1SU0EgQ0EwHhcNMjYxMDI4MTgxMDM2WhcNMjkwMTMw
+MTgxMDM2WjASMRAwDgYDVQQDDAdjbGllbnQxMIIBIjANBgkqhkiG9w0BAQEFAAOC
+AQ8AMIIBCgKCAQEAkNFs+9ciPv3X4X2zjla25mBG4KekrUwjAOj7Ght6apZ2DXl3
+D78CYNFAYx/2FK5GL8XoInQ+GiOtdfOIpM/1Ia3pdm+3/UDVaxV2ZC6uTDNDCbTa
+6S3YSrWGqrotNS1yW6WYOpP2HRCtFaxCkTvEFb6gjPv16IlB9vHrA7DrMP5bzkpk
+/F0EBEZljQUGZ1AHLEvU9Ril/hZvMpUiU4sjt0R+Kvv3ghtaVDmjYxmPCLQ7SWmg
+OjPx2dypRi5ajiBxENS3SJpuMNO+RPAhyeE09JTmJV4k5MGnFbgBlxOLoH88HbtQ
+ieZGFIPm+xL5DuX9RLnS2iDVIVG5iKmARcBunQIDAQABo4GiMIGfMAkGA1UdEwQC
+MAAwHQYDVR0OBBYEFNPCSVvPI/EbyCiRL+i70O8KgmtgMFEGA1UdIwRKMEiAFNsd
+ZqcTkuJDDS5vtblg+rx7tr1ZoRqkGDAWMRQwEgYDVQQDDAtFYXN5LVJTQSBDQYIU
+ec5muEeXCPzdgrsWEelrsrt25wAwEwYDVR0lBAwwCgYIKwYBBQUHAwIwCwYDVR0P
+BAQDAgeAMA0GCSqGSIb3DQEBCwUAA4IBAQAIjIBeSwVl4QIEqd9O1sGKyP4dgBPT
+EFmZwx0uo9YGifas0vr+oAtltr2NJnflmfF1PPNSPlCJCzz4dl+JsyP/lxHM4vgQ
+dVVVhd1y39DNwUmVb41eO3+lyKJwXNJdp3Bj0A3umpZEapR1zV2i2SRIE+MWwNFv
+01+Ti0XxhF9eFfuWJAe7ezyJsOhto7LHnRwRS7aHuBdDGRxOchi2FQ3QyQxrjyD/
+eBn6KeaonTSgXV4pX9HiM5/TgIaYKipW+IOmn5+lGQsvj7kyD+8VpD9DaVuo7547
+FKm4OZ+IP9hIaEvzB9TYGkFTaB9ZaW9HlVefWqV8Xlhsbo4pStVajNqX
+-----END CERTIFICATE-----
+</cert>
+<key>
+-----BEGIN PRIVATE KEY-----
+MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQCQ0Wz71yI+/dfh
+fbOOVrbmYEbgp6StTCMA6PsaG3pqlnYNeXcPvwJg0UBjH/YUrkYvxegidD4aI611
+84ikz/Uhrel2b7f9QNVrFXZkLq5MM0MJtNrpLdhKtYaqui01LXJbpZg6k/YdEK0V
+rEKRO8QVvqCM+/XoiUH28esDsOsw/lvOSmT8XQQERmWNBQZnUAcsS9T1GKX+Fm8y
+lSJTiyO3RH4q+/eCG1pUOaNjGY8ItDtJaaA6M/HZ3KlGLlqOIHEQ1LdImm4w075E
+8CHJ4TT0lOYlXiTkwacVuAGXE4ugfzwdu1CJ5kYUg+b7EvkO5f1EudLaINUhUbmI
+qYBFwG6dAgMBAAECggEADFNm3UCAT7A3UZ/rSnAi/RSws6pRH9bdG9S4mo5AKxZH
+UfpGofZ181ucCVPNFBGJM8O6cERIjN0AhIuH089HY+hzeHslw85i28xl2T0H5MBw
+MkFMaJBYWnN81Mcn1eDaXOaJQGMbjXm/4ZpZyBa4J8mjzJwdX/9et+/7OsMyIWdE
+BI9uLWVAdjGRsia1WkdQ9JDDTnCLFt2MvCxYUQQhzif7GcmpNgbBtzJcnH+Bz3me
+8oWqRBGlJ1rD1oG3vwHVexsX2cyc6CEHwfp56FH83FGRoxXYU14X6mPYIwZOy4do
+jFwbGwtsSY9MNC5/DSVoBMzi4hVUMb1t2xtYTyck2QKBgQDKFH8XV8KgkPa9F45x
+DhhCMdFsOvHCQnDYPBWRQTBcZyN+3Do7r8MdkPSnMWy5gZzkEDjT6BiCWq4FkZGB
+DOlECU/ad6tx1ox4kw0BsskjXcaBf5AbU0rrac/d2EZ3qo2m8cUHduUCyllyGmMQ
+Bx/G58oEu5lLnFE08qePnQmtEwKBgQC3dYdA8Cv5AB1FVuD9ZGKrjuoH1ZqQyGBO
+pU6e3pCfARu1JxGi3o3apGy9GG18Q3f5rwUSADw9bQL8IcU5qqG4gXr/SbTxTcxH
+qv4GWknbJOBLSKmfxX0w9LTlp+zYZaRK7Mf02cvHycWXUpC8tm2VFHk6Ys+UNbal
+bAE7iUFbjwKBgQCj6C4Rm/BUVmCbjVDO6HTKtCe+Vq0jOMrYyRthPvPf7xQ+YJin
+Mu/aummGdzNN4BCGd5XwY1AF41FFWQYhG3zU34yykeAwrKoxXmztVLuKgRRykyoq
+z8tz2NZuhW7avy64G2AJpukn80LLpxV0uaKPrhAQ+KzlRDwl6y/375MamwKBgE85
+PKApVwPfLcS8wMoL6KQnQh8B+g5dyWEM98eZWyCe7OUsquwHaYCqkp6SBu2rgQrc
+rrbYTStFgQ16U94UNmQj3gaSQMYXj4i/aZU6tjwhT46TIVTyhp52fgvSmW/VbL5C
+RBMTXnG3S1GOgRxNN0MypSs2cmeRTn9fBaU9H3E3AoGBALaiBE8ftjwy+qBCcCCf
+vJ1cY5jdthloUsAe+tiqZdF55dcW8mTWVwzynnnkNJ6Psz2QLAWT/ngzyIwsXJTG
+YnDuOjevThY++MxU8NpCoZ6JhsmOE28nqjUiARJU0mJyBT2Zx6gw89qK7vrQOpuw
+OX4JDfQnjte29agd5UsAZ0DW
+-----END PRIVATE KEY-----
+</key>
+<tls-auth>
+#
+# 2048 bit OpenVPN static key
+#
+-----BEGIN OpenVPN Static key V1-----
+003e2ef38880a881a7abd0a518733fd0
+15a95145ca926f9490453e515b77bf8c
+70af2894c763427a2c440a6f8939699f
+a82237f562af0921145a940cc682bd19
+ce22ae239f39d133de5566fdfb20709b
+d185310e9f5739a014c772805100df71
+0acd2d8f030eafb2f1fd7332b3e39cc4
+8d30bd43acfdcb9dca0c3d5a087464c6
+09d83895d2fd5713e67bafedf3b428e6
+51118db1530c90d16a798a89fc33b065
+f2f030e88b87bb6f075424808f4bca99
+a73bb0a48bddbd88b138328cf5cf20dc
+ec657b6030a0f1acec1a051d8b85e6dc
+6e9c0f556221f740f01b4b620d27f678
+d086c95736009a752aaeb11b3321529b
+0eeb7e37126e7a86315d04d531eb932a
+-----END OpenVPN Static key V1-----
+</tls-auth>
+[vagrant@vpnserver ~]$
